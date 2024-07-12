@@ -20,9 +20,12 @@ export default function VideoCarousel() {
 
   const { isEnd, startPlay, videoId, isLastVideo, isPlaying } = videoDuration;
 
-  
   useGSAP(() => {
+    gsap.to("#slider", {
+        transform: `translateX(${-100 * videoId}%)`,
+    })
     gsap.registerPlugin(ScrollTrigger);
+
     gsap.to("#video", {
       scrollTrigger: {
         trigger: "#video",
@@ -67,7 +70,11 @@ export default function VideoCarousel() {
 
             gsap.to(videoDivRef.current[videoId], {
               width:
-                window.innerWidth < 760 ? `10vw` : window.innerWidth < 1200 ? "10vw" : "4vw",
+                window.innerWidth < 760
+                  ? `10vw`
+                  : window.innerWidth < 1200
+                  ? "10vw"
+                  : "4vw",
             });
 
             gsap.to(span[videoId], {
@@ -94,7 +101,8 @@ export default function VideoCarousel() {
 
       const animUpdate = () => {
         anim.progress(
-          videoRef.current[videoId].currentTime / hightlightsSlides[videoId].videoDuration
+          videoRef.current[videoId].currentTime /
+            hightlightsSlides[videoId].videoDuration
         );
       };
 
@@ -159,6 +167,11 @@ export default function VideoCarousel() {
                   preload="auto"
                   muted
                   ref={(el) => (videoRef.current[id] = el)}
+                  onEnded={() =>
+                    id !== 3
+                      ? handlProgress("video-end", id)
+                      : handlProgress("video-last", id)
+                  }
                   onPlay={() =>
                     setVideoDuration((prevVideo) => ({
                       ...prevVideo,
