@@ -4,6 +4,7 @@ import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { pauseImg, playImg, replayImg } from "../utils";
 import { useGSAP } from "@gsap/react";
+import { list } from "postcss";
 
 export default function VideoCarousel() {
   const videoRef = useRef([]);
@@ -22,8 +23,10 @@ export default function VideoCarousel() {
 
   useGSAP(() => {
     gsap.to("#slider", {
-        transform: `translateX(${-100 * videoId}%)`,
-    })
+      transform: `translateX(${-100 * videoId}%)`,
+      duration: 2,
+      ease: "power2.inOut",
+    });
     gsap.registerPlugin(ScrollTrigger);
 
     gsap.to("#video", {
@@ -149,6 +152,13 @@ export default function VideoCarousel() {
         }));
         break;
 
+      case "pause":
+        setVideoDuration((prev) => ({
+          ...prev,
+          isPlaying: !prev,
+        }));
+        break;
+
       default:
         return videoDuration;
     }
@@ -166,11 +176,14 @@ export default function VideoCarousel() {
                   playsInline={true}
                   preload="auto"
                   muted
+                  className={`${list.id === 2 && "translate-x-44"}
+                    pointer-events-none
+                  `}
                   ref={(el) => (videoRef.current[id] = el)}
                   onEnded={() =>
                     id !== 3
                       ? handlProgress("video-end", id)
-                      : handlProgress("video-last", id)
+                      : handlProgress("video-last")
                   }
                   onPlay={() =>
                     setVideoDuration((prevVideo) => ({
